@@ -1,7 +1,32 @@
-//const express =  require('express')
-import express from 'express';
-const app  =  express()
+import express from 'express'
+import {graphqlExpress, graphiqlExpress} from 'apollo-server-express'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import {createServer} from 'http'
+import {printSchema} from 'graphql/utilities/schemaPrinter'
 
-app.get('/', (req, res) => res.send('Hello World!'))
+import schema from './api/schema'
 
-app.listen(4001, () => console.log('Example app listening on port 4001!'))
+const GRAPHQL_PORT = 4001
+
+const graphQLServer = express().use('*', cors())
+
+graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({
+  schema,
+  context: {},
+}))
+
+graphQLServer.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql',
+}))
+
+graphQLServer.use('/schema', (req, res) => {
+  res.set('Content-Type', 'text/plain')
+  res.send(printSchema(schema))
+})
+
+graphQLServer.listen(GRAPHQL_PORT, () => console.log(
+  `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`
+))
+
+
