@@ -58,4 +58,5 @@ yarn-error.log
 
 /.idea/workspace.xml
 /.tools/scripts/dump
-/.cache
+.cache
+dist/
